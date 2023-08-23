@@ -35,9 +35,11 @@ def add_snippet_page(request):
 
 def snippets_page(request):
     snippets = Snippet.objects.all()
+    count = Snippet.objects.all().count()
     context = {
         'pagename': 'Просмотр сниппетов',
-        'snippets': snippets
+        'snippets': snippets,
+        'count': count
         }
     return render(request, 'pages/view_snippets.html', context)
 
