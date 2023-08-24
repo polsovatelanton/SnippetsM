@@ -29,12 +29,13 @@
                     <th scope="col">Название</th>
                     <th scope="col">Дата создания</th>
                     <th scope="col">Пользователь</th>
-                    <th scope="col">Параметр</th>
                 </tr>
                 </thead>
+                {% if request.user.is_authenticated %}
                 <tbody>
                     {% for snippet in snippets %}
-                        {% if snippet.parameter == 'je' %}
+                        {% if snippet.user_id == request.user.id %}
+
                             <tr>
                                 <td scope="row">{{ snippet.id }}</td>
                                 <td><a href="{% url 'snippet-detail' snippet.id %}">{{ snippet.name }}</a>
@@ -47,12 +48,11 @@
                                 </td>
                                 <td>{{ snippet.creation_date }}</td>
                                 <td>{{ snippet.user.username }}</td>
-                                <td>{{ snippet.parameter }}</td>
                             </tr>
-
                         {% endif %}
                     {% endfor %}
                 </tbody>
+                {% endif %}
             </table>
             <div align="right">
                 <i style="color: gray;">Всего сниппетов: {{count}} </i>
