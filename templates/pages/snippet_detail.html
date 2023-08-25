@@ -40,6 +40,18 @@
 
             </div>
         </div>
+        <table border="1">
+            <tr>
+                <th>Автор</th>
+                <th>Комментарий  {{comment.text}} </th>
+            </tr>
+            {% for comment in comments %}
+            <tr>
+                <td>{{comment.author.username}}</td>
+                <td>{{comment.text}}</td>
+            </tr>
+            {% endfor %}
+        </table>
         </fieldset>
         {% elif type == 'edit' %}
         <form action ="" method='post'>
@@ -63,12 +75,23 @@
                         <textarea name="code">
                             {{ snippet.code }}
                         </textarea>
-
                     </div>
-
                 </div>
             </div>
             <button type="submit"> Обновить </button>
+        </form>
+        <form action="{% url 'comment_add' %}" method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <div class="p-2 h-100" style="border:1px solid #ced4da; border-radius:5px;">
+                        <textarea name="text">
+                            {{comment_form}}
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+            <button type="submit">Добавить</button>
         </form>
         {% endif %}
         </div>

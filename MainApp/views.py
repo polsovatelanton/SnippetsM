@@ -1,7 +1,7 @@
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from MainApp.models import Snippet
-from MainApp.forms import SnippetForm
+from MainApp.forms import SnippetForm, UserRegistrationForm, CommentForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth
@@ -44,8 +44,8 @@ def snippets_page(request):
     return render(request, 'pages/view_snippets.html', context)
 
 def mysnippets_page(request):
-    snippets = Snippet.objects.all()
-    count = Snippet.objects.all().count()
+    snippets = Snippet.objects.filter(user=request.user)
+    count = Snippet.objects.filter(user=request.user).count()
     context = {
         'pagename': 'Просмотр сниппетов',
         'snippets': snippets,
@@ -96,6 +96,38 @@ def snippet_edit(request, snippet_id):
         snippet.save()
         return redirect("snippets-list")
 
+def create_user(request):
+    context = {"pagename": "Регистрация пользователя"}
+    if request.method == "GET":
+        form = UserRegistrationForm()
+        context["form"] = form
+        return render(request, 'pages/registration.html', context)
+    if request.method == "POST":
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        context['form'] = form
+        return render(request, 'pages/registration.html', context)
+
+def comment_add(request):
+    context = {"pagename": "Добавление комментария"}
+    if request.method == "GET":
+        form = CommentForm()
+        context["form"] = form
+        return render(request, 'pages/snippet_detail.html', context)
+
+    if request.method == "POST":
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.author = comment_form.cleaned_data['username']
+            comment.snippet = comment_form.cleaned_data['name']
+            comment.save()
+
+        return redirect("snippets-list")
+
+    raise Http404
 
 def login(request):
     if request.method == "POST":
